@@ -177,8 +177,10 @@ def get_request_handler(
                     body = await request.form()
                 else:
                     body_bytes = await request.body()
-                    if body_bytes:
+                    if body_bytes and request.headers['Content-Type'] == 'application/json':
                         body = await request.json()
+                    else:
+                        body = body_bytes
         except json.JSONDecodeError as e:
             raise RequestValidationError([ErrorWrapper(e, ("body", e.pos))], body=e.doc)
         except Exception as e:
